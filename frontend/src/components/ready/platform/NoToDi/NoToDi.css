@@ -1,0 +1,17 @@
+.notodi {
+    width: 100%;
+}
+
+.notodi__inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.notodi_img {
+    width: 400px;
+}

@@ -1,0 +1,19 @@
+{
+  "name": "dietly",
+  "version": "1.0.0",
+  "description": "1. https://nodejs.org/en/\r 2. https://expressjs.com/\r 3. https://www.prisma.io/\r 4. https://hevodata.com/learn/rest-api-best-practices/",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dietly-com/Dietly.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Dietly-com/Dietly/issues"
+  },
+  "homepage": "https://github.com/Dietly-com/Dietly#readme"
+}

@@ -1,0 +1,323 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  views Int @default(0)
+
+  name  String
+  surname String?
+  login String @unique
+  password  String
+  email String  @unique
+  phone String?
+  sex String?
+  yearOfBirth Int?
+  height Float?
+  weight Float?
+  targetWeight Float?
+  activeLevel Int?
+  file File? @relation(fields: [fileId], references: [id])
+  fileId Int?
+
+  displayTheme String?
+  displayLanguage String?
+
+  userBadges UserBadge[]
+  userPersonalBests UserPersonalBest[]
+  ownedDiets Diet[]
+  ownedProducts Product[]
+  ownedRecipes Recipe[]
+  userActiveDiets UserActiveDiet[]
+  userMeals UserMeal[]
+}
+
+model Badge {
+  id    Int     @id @default(autoincrement())
+  views Int @default(0)
+
+  name String
+  description String?
+  file File? @relation(fields: [fileId], references: [id])
+  fileId Int?
+
+  userBadges UserBadge[]
+}
+
+model UserBadge {
+  id    Int     @id @default(autoincrement())
+  views Int @default(0)
+
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+  badge Badge @relation(fields: [badgeId], references: [id])
+  badgeId Int
+  time DateTime @default(now())
+}
+
+model PersonalBest {
+  id    Int     @id @default(autoincrement())
+  views Int @default(0)
+
+  name String
+  description String?
+  file File? @relation(fields: [fileId], references: [id])
+  fileId Int?
+
+  userPersonalBests UserPersonalBest[]
+}
+
+model UserPersonalBest {
+  id    Int     @id @default(autoincrement())
+  views Int @default(0)
+
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+  personalBest PersonalBest @relation(fields: [personalBestId], references: [id])
+  personalBestId Int
+}
+
+model UserActiveDiet {
+  id    Int     @id @default(autoincrement())
+  views Int @default(0)
+
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+  diet Diet @relation(fields: [dietId], references: [id])
+  dietId Int
+  startTime DateTime
+  endTime DateTime
+  active Boolean @default(true)
+}
+
+model UserMeal {
+  id    Int     @id @default(autoincrement())
+  views Int @default(0)
+
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+  name String
+  year Int
+  month Int
+  day Int
+  hour Int
+  minute Int
+
+  userMealProducts UserMealProduct[]
+  userMealRecipes UserMealRecipe[]
+}
+
+model UserMealProduct {
+  id    Int     @id @default(autoincrement())
+  views Int @default(0)
+
+  userMeal UserMeal @relation(fields: [userMealId], references: [id])
+  userMealId Int
+  product Product @relation(fields: [productId], references: [id])
+  productId Int
+  unit Unit @relation(fields: [unitId], references: [id])
+  unitId Int
+  quantity Int @default(100)
+}
+
+model UserMealRecipe {
+  id    Int     @id @default(autoincrement())
+  views Int @default(0)
+
+  userMeal UserMeal @relation(fields: [userMealId], references: [id])
+  userMealId Int
+  recipe Recipe @relation(fields: [recipeId], references: [id])
+  recipeId Int
+  unit Unit @relation(fields: [unitId], references: [id])
+  unitId Int
+  quantity Int @default(100)
+}
+
+model Unit {
+  id    Int     @id @default(autoincrement())
+  views Int @default(0)
+
+  name String
+  viewName String
+  code String
+  quantity Float @default(1)
+
+  products Product[]
+  recipes Recipe[]
+  userMealProducts UserMealProduct[]
+  userMealRecipes UserMealRecipe[]
+  recipeProducts RecipeProduct[]
+  dietMealRecipes DietMealRecipe[]
+  dietMealProducts DietMealProduct[]
+  nutrients Nutrient[]
+}
+
+model Nutrient {
+  id    Int     @id @default(autoincrement())
+  views Int @default(0)
+
+  name String
+  viewName String
+  code String
+  min Int?
+  max Int?
+  unit Unit @relation(fields: [unitId], references: [id])
+  unitId Int @default(1)
+
+  productNutrients ProductNutrient[]
+}
+
+model Product {
+  id    Int     @id @default(autoincrement())
+  views Int @default(0)
+
+  name String
+  category String?
+  producer String?
+  code String?
+  nutriScore String?
+  vegan Boolean? @default(false)
+  vegetarian Boolean? @default(false)
+  description String?
+  owner User? @relation(fields: [ownerId], references: [id])
+  ownerId Int?
+  file File? @relation(fields: [fileId], references: [id])
+  fileId Int?
+  unit Unit @relation(fields: [unitId], references: [id])
+  unitId Int
+  quantity Int @default(100)
+
+  userMealProducts UserMealProduct[]
+  productNutrients ProductNutrient[]
+  recipeProducts RecipeProduct[]
+  dietMealProducts DietMealProduct[]
+}
+
+model ProductNutrient {
+  id    Int     @id @default(autoincrement())
+  views Int @default(0)
+
+  product Product @relation(fields: [productId], references: [id])
+  productId Int
+  nutrient Nutrient @relation(fields: [nutrientId], references: [id])
+  nutrientId Int
+  quantity Float
+}
+
+model Recipe {
+  id    Int     @id @default(autoincrement())
+  views Int @default(0)
+
+  name String
+  category String?
+  vegan Boolean? @default(false)
+  vegetarian Boolean? @default(false)
+  description String?
+  preparation String? @db.LongText
+  owner User? @relation(fields: [ownerId], references: [id])
+  ownerId Int?
+  file File? @relation(fields: [fileId], references: [id])
+  fileId Int?
+  unit Unit @relation(fields: [unitId], references: [id])
+  unitId Int
+  quantity Float @default(100)
+
+  userMealRecipes UserMealRecipe[]
+  recipeProducts RecipeProduct[]
+  dietMealRecipes DietMealRecipe[]
+}
+
+model RecipeProduct {
+  id    Int     @id @default(autoincrement())
+  views Int @default(0)
+
+  recipe Recipe @relation(fields: [recipeId], references: [id])
+  recipeId Int
+  product Product @relation(fields: [productId], references: [id])
+  productId Int
+  unit Unit @relation(fields: [unitId], references: [id])
+  unitId Int
+  quantity Float
+}
+
+model Diet {
+  id    Int     @id @default(autoincrement())
+  views Int @default(0)
+
+  name String
+  description String?
+  owner User? @relation(fields: [ownerId], references: [id])
+  ownerId Int?
+  file File? @relation(fields: [fileId], references: [id])
+  fileId Int?
+
+  userActiveDiets UserActiveDiet[]
+  dietMeals DietMeal[]
+}
+
+model DietMeal {
+  id    Int     @id @default(autoincrement())
+  views Int @default(0)
+
+  name String
+  day Int
+  hour Int
+  minute Int
+  diet Diet @relation(fields: [dietId], references: [id])
+  dietId Int
+
+  dietMealRecipes DietMealRecipe[]
+  dietMealProducts DietMealProduct[]
+}
+
+model DietMealRecipe {
+  id    Int     @id @default(autoincrement())
+  views Int @default(0)
+
+  dietMeal DietMeal @relation(fields: [dietMealId], references: [id])
+  dietMealId Int
+  recipe Recipe @relation(fields: [recipeId], references: [id])
+  recipeId Int
+  unit Unit @relation(fields: [unitId], references: [id])
+  unitId Int
+  quantity Float
+}
+
+model DietMealProduct {
+  id    Int     @id @default(autoincrement())
+  views Int @default(0)
+
+  dietMeal DietMeal @relation(fields: [dietMealId], references: [id])
+  dietMealId Int
+  product Product @relation(fields: [productId], references: [id])
+  productId Int
+  unit Unit @relation(fields: [unitId], references: [id])
+  unitId Int
+  quantity Float
+}
+
+model File {
+  id    Int     @id @default(autoincrement())
+  views Int @default(0)
+
+  name String?
+  category String?
+  type String?
+  path String
+
+  users User[]
+  badges Badge[]
+  personalBests PersonalBest[]
+  diets Diet[]
+  products Product[]
+  recipes Recipe[]
+}
